@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MPQ — پرۆژەکانم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: #0d1221;
+      --card: #111827;
+      --border: #1e2d45;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --accent3: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --success: #10b981;
+    }
+
+```
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+  top: -200px; left: -200px;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite;
+}
+.bg-glow2 {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+  bottom: -150px; right: -150px;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(5,8,16,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(0,212,255,0.5);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+.nav-right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 0.55rem 1.4rem;
+  border-radius: 8px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 0 20px rgba(0,212,255,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,212,255,0.5); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 100px;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  animation: fadeUp 0.6s ease both;
+}
+.badge-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.7s ease 0.1s both;
+}
+.hero h1 span.name {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: var(--muted);
+  max-width: 600px;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+.btn-large {
+  padding: 0.9rem 2.2rem;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 5rem;
+  animation: fadeUp 0.7s ease 0.4s both;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION ── */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+.section-sub {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 3rem;
+}
+
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.project-card:hover {
+  border-color: rgba(0,212,255,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.project-card:hover::before { opacity: 1; }
+
+.project-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.project-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.project-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tag {
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.15);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 100px;
+}
+
+/* ── ADD PROJECT (locked) ── */
+.add-card {
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-height: 180px;
+}
+.add-card:hover {
+  border-color: var(--accent);
+  background: rgba(0,212,255,0.03);
+}
+.add-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(0,212,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+.add-text { color: var(--muted); font-size: 0.95rem; }
+
+/* ── LOGIN MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  animation: modalIn 0.3s ease both;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.2rem; left: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 0.3rem;
+  text-shadow: 0 0 20px rgba(0,212,255,0.4);
+}
+.modal-subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.tabs {
+  display: flex;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.8rem;
+}
+.tab {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.tab.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.form-group input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: var(--text);
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: right;
+}
+.form-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+}
+
+.form-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Cairo', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+}
+.form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,255,0.4); }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.2rem 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.divider span { color: var(--muted); font-size: 0.8rem; }
+
+.msg {
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  display: none;
+}
+.msg.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); display: block; }
+.msg.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; display: block; }
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+footer span { color: var(--accent); }
+
+/* ── USER MENU ── */
+.user-badge {
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 100px;
+  padding: 0.4rem 1rem 0.4rem 0.5rem;
+  cursor: pointer;
+}
+.user-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.user-name { font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+```
+
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<!-- NAV -->
+
+<nav>
+  <div class="logo">MPQ</div>
+  <ul class="nav-links">
+    <li><a href="#projects">پرۆژەکان</a></li>
+    <li><a href="#about">دەربارەم</a></li>
+    <li><a href="#contact">پەیوەندی</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="user-badge" id="userBadge">
+      <div class="user-avatar" id="userAvatar">م</div>
+      <span class="user-name" id="userName">MPQ</span>
+    </div>
+    <button class="btn btn-ghost" id="loginBtn" onclick="openModal('login')">چوونەژوورەوە</button>
+    <button class="btn btn-primary" id="registerBtn" onclick="openModal('register')">تۆمارکردن</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<div class="hero">
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    بەخێربێیت بۆ پرۆفایلم
+  </div>
+  <h1>سڵاو، منم<br/><span class="name">MPQ</span></h1>
+  <p>ئەمە ماڵپەڕی کەسیمە — پرۆژەکانم، کارەکانم، و ئامانجەکانم هەمووی ئێرەن.</p>
+  <div class="hero-cta">
+    <button class="btn btn-primary btn-large" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">
+      پرۆژەکانم ببینە
+    </button>
+    <button class="btn btn-ghost btn-large" onclick="openModal('register')">
+      بەشداری بکە
+    </button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="projectCount">0</div>
+      <div class="stat-label">پرۆژە</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="memberCount">0</div>
+      <div class="stat-label">ئەندام</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">٢٠٢٥</div>
+      <div class="stat-label">ساڵ</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+
+<section id="projects">
+  <div class="section-label">// پرۆژەکان</div>
+  <div class="section-title">کارەکانم</div>
+  <div class="section-sub">پرۆژەکانم کە لەسەرم کاردەکەم</div>
+
+  <div class="projects-grid" id="projectsGrid">
+    <!-- دەردەکرێن بە JS -->
+  </div>
+</section>
+
+<!-- LOGIN MODAL -->
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">MPQ</div>
+    <div class="modal-subtitle">بەشێک بە ماڵپەڕەکەمدا بە</div>
+
+```
+<div class="tabs">
+  <button class="tab active" id="tab-login" onclick="switchTab('login')">چوونەژوورەوە</button>
+  <button class="tab" id="tab-register" onclick="switchTab('register')">تۆمارکردن</button>
+</div>
+
+<!-- LOGIN -->
+<div id="form-login">
+  <div class="form-group">
+    <label>ئیمەیل</label>
+    <input type="email" id="loginEmail" placeholder="ئیمەیلەکەت بنووسە" />
+  </div>
+  <div class="form-group">
+    <label>پاسوۆرد</label>
+    <input type="password" id="loginPass" placeholder="••••••••" />
+  </div>
+  <button class="form-submit" onclick="handleLogin()">چوونەژوورەوە</button>
+  <div class="msg" id="loginMsg"></div>
+</div>
+
+<!-- REGISTER -->
+<div id="form-register" style="display:none">
+  <div class="form-group">
+    <label>ناو</label>
+    <input type="text" id="regName" placeholder="ناوت بنووسە" />
+  </div>
+  <div class="form-group">
+    <label>ئیمەیل</label>
+    <input type="email" id="regEmail" placeholder="ئیمەیلەکەت بنووسە" />
+  </div>
+  <div class="form-group">
+    <label>پاسوۆرد</label>
+    <input type="password" id="regPass" placeholder="••••••••" />
+  </div>
+  <button class="form-submit" onclick="handleRegister()">دروستکردنی ئەکاونت</button>
+  <div class="msg" id="registerMsg"></div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+  دروستکراو بە ❤️ لەلایەن <span>MPQ</span> — ٢٠٢٥
+</footer>
+
+<script>
+  // ── DATA ──
+  const PROJECTS_KEY = 'mpq_projects';
+  const USERS_KEY    = 'mpq_users';
+  const SESSION_KEY  = 'mpq_session';
+
+  let projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+  let users    = JSON.parse(localStorage.getItem(USERS_KEY)    || '[]');
+  let session  = JSON.parse(localStorage.getItem(SESSION_KEY)  || 'null');
+
+  // default projects
+  if (projects.length === 0) {
+    projects = [
+      { id:1, title:'پرۆژەی یەکەم', desc:'ئەمە یەکەمین پرۆژەمە کە دروستم کرد.', icon:'🚀', color:'rgba(0,212,255,0.1)', tags:['دیزاین','وێب'] },
+      { id:2, title:'پرۆژەی دووەم', desc:'کارێکی تازە لەسەر تەکنەلۆژیا.', icon:'💡', color:'rgba(124,58,237,0.1)', tags:['تەکنەلۆژیا','AI'] },
+    ];
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+  }
+
+  // ── RENDER ──
+  function renderProjects() {
+    const grid = document.getElementById('projectsGrid');
+    grid.innerHTML = '';
+
+    projects.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.innerHTML = `
+        <div class="project-icon" style="background:${p.color}">${p.icon}</div>
+        <div class="project-title">${p.title}</div>
+        <div class="project-desc">${p.desc}</div>
+        <div class="project-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // add card — only if logged in as owner
+    if (session && session.isOwner) {
+      const add = document.createElement('div');
+      add.className = 'add-card';
+      add.onclick = addProject;
+      add.innerHTML = `
+        <div class="add-icon">+</div>
+        <div class="add-text">پرۆژەی نوێ زیاد بکە</div>
+      `;
+      grid.appendChild(add);
+    }
+
+    // counters
+    animateCount('projectCount', projects.length);
+    animateCount('memberCount', users.length || 1);
+  }
+
+  function animateCount(id, target) {
+    let n = 0;
+    const el = document.getElementById(id);
+    const step = Math.ceil(target / 30);
+    const t = setInterval(() => {
+      n = Math.min(n + step, target);
+      el.textContent = n;
+      if (n >= target) clearInterval(t);
+    }, 40);
+  }
+
+  // ── ADD PROJECT ──
+  function addProject() {
+    const title = prompt('ناوی پرۆژەکە بنووسە:');
+    if (!title) return;
+    const desc  = prompt('کورتەی پرۆژەکە:') || '';
+    const icons = ['🚀','💡','🎯','⚡','🔥','🌐','📱','🛠️'];
+    const icon  = icons[Math.floor(Math.random()*icons.length)];
+    const colors= ['rgba(0,212,255,0.1)','rgba(124,58,237,0.1)','rgba(245,158,11,0.1)','rgba(16,185,129,0.1)'];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    projects.push({ id: Date.now(), title, desc, icon, color, tags:['نوێ'] });
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    renderProjects();
+  }
+
+  // ── MODAL ──
+  function openModal(tab) {
+    document.getElementById('modalOverlay').classList.add('active');
+    switchTab(tab);
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  }
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  function switchTab(tab) {
+    document.getElementById('form-login').style.display    = tab==='login'    ? 'block' : 'none';
+    document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active',    tab==='login');
+    document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  }
+
+  // ── AUTH ──
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const msg   = document.getElementById('loginMsg');
+
+    if (!email || !pass) { showMsg(msg,'error','ئیمەیل و پاسوۆرد پڕبکەرەوە'); return; }
+
+    // owner shortcut
+    const isOwner = (email === 'mpq@mpq.com');
+    const user = users.find(u => u.email===email && u.pass===pass);
+
+    if (!user && !isOwner) { showMsg(msg,'error','ئیمەیل یان پاسوۆرد هەڵەیە'); return; }
+
+    const s = { name: user ? user.name : 'MPQ', email, isOwner };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    session = s;
+    updateNav();
+    showMsg(msg,'success','بەخێربێیت! 👋');
+    setTimeout(closeModal, 1200);
+    renderProjects();
+  }
+
+  function handleRegister() {
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const pass  = document.getElementById('regPass').value;
+    const msg   = document.getElementById('registerMsg');
+
+    if (!name||!email||!pass) { showMsg(msg,'error','هەمووی پڕبکەرەوە'); return; }
+    if (users.find(u=>u.email===email)) { showMsg(msg,'error','ئەم ئیمەیلە پێشتر تۆمارکراوە'); return; }
+
+    users.push({name,email,pass});
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+    session = { name, email, isOwner: false };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    updateNav();
+    showMsg(msg,'success','ئەکاونتەکەت دروستبوو! 🎉');
+    setTimeout(closeModal, 1200);
+    renderProjects();
+  }
+
+  function showMsg(el, type, text) {
+    el.className = `msg ${type}`;
+    el.textContent = text;
+  }
+
+  function updateNav() {
+    const lb = document.getElementById('loginBtn');
+    const rb = document.getElementById('registerBtn');
+    const ub = document.getElementById('userBadge');
+    const un = document.getElementById('userName');
+    const ua = document.getElementById('userAvatar');
+
+    if (session) {
+      lb.style.display = 'none';
+      rb.style.display = 'none';
+      ub.style.display = 'flex';
+      un.textContent = session.name;
+      ua.textContent = session.name.charAt(0).toUpperCase();
+    } else {
+      lb.style.display = '';
+      rb.style.display = '';
+      ub.style.display = 'none';
+    }
+  }
+
+  // ── INIT ──
+  updateNav();
+  renderProjects();
+</script>
+
+</body>
+</html>
