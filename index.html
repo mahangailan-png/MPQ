@@ -1001,3 +1001,146 @@ footer span { color: var(--accent); }
 
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPQ</title>
+  
+  <style>
+    /* ==========================================
+       ١. باگراوندی نوێی ناوەوەی ماڵپەڕەکە (The Chronos Style)
+       ========================================== */
+    body {
+      margin: 0;
+      padding: 0;
+      /* پاشبنەمایەکی تاریکی قووڵ لەگەڵ تیشکێکی کزی زێڕینی مات لە ناوەڕاستدا */
+      background: radial-gradient(circle at center, #1c1510 0%, #0a0a0a 100%);
+      color: #e5e5e5; /* ڕەنگی دەقەکانی ناو ماڵپەڕەکە */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ==========================================
+       ٢. ستایلی شاشەی لۆدینگی ٣ چرکەییەکە
+       ========================================== */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: #050505; /* پاشبنەمای تەواو ڕەش بۆ سەرەتای لۆدینگەکە */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999; /* بۆ ئەوەی لە سەرەوەی هەموو شتێک بێت */
+      transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+    }
+
+    .chronos-container {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ڕێکخستنی ئەو وێنەیەی کە ناردت وەک لۆگۆ */
+    .chronos-logo {
+      width: 450px; /* قەبارەی لۆگۆکە لەسەر شاشە */
+      height: 250px;
+      background-image: url('image.png'); /* ناوی وێنەکەت پێویستە image.png بێت */
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      /* دروستکردنی تیشکێکی کزی زێڕین لە پشتی وێنەکە */
+      filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.25));
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    /* هێڵی لۆدینگی باریک و پرۆفیشناڵ */
+    .loading-bar-container {
+      width: 250px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-top: -10px;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .loading-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #b8860b, transparent);
+      animation: fillProgress 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* نووسینی ژێر لۆدینگەکە */
+    .loading-text {
+      color: #7a746e;
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      margin-top: 15px;
+      letter-spacing: 3px;
+      opacity: 0.8;
+    }
+
+    /* ئەنیمەیشن بۆ دروستکردنی لەرینەوەی نەرمی ڕووناکی لۆگۆکە */
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.2)); }
+      50% { filter: drop-shadow(0 0 35px rgba(184, 134, 11, 0.4)); }
+    }
+
+    /* ئەنیمەیشنی پڕبوونی هێڵی لۆدینگەکە */
+    @keyframes fillProgress {
+      to { width: 100%; }
+    }
+
+    /* کلاسی شاردنەوەی لۆدینگەکە دوای ٣ چرکە */
+    .fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    /* ==========================================
+       ٣. ستایلی ناوەڕۆکی سەرەکی ماڵپەڕەکەت
+       ========================================== */
+    .content-box {
+      padding: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-screen">
+    <div class="chronos-container">
+      <div class="chronos-logo"></div>
+      <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+      </div>
+      <p class="loading-text">MPQ: Aligning Precision...</p>
+    </div>
+  </div>
+
+  <div class="content-box">
+    <h1>بەخێربێن بۆ ماڵپەڕی MPQ</h1>
+    <p>ئەمە باگراوەندە نوێیەکەیە بە ستایلی کاتژمێری میکانیکی تاریک.</p>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.classList.add('fade-out');
+        }
+      }, 3000); 
+    });
+  </script>
+
+</body>
+</html>
