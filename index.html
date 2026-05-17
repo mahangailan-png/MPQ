@@ -864,12 +864,24 @@ footer span { color: var(--accent); }
       margin: 0;
       padding: 0;
       /* پاشبنەمایەکی تاریکی قووڵ لەگەڵ تیشکێکی کزی زێڕینی مات لە ناوەڕاستدا */
-      background-image: url('image.png.jpeg');;
-      color: #e5e5e5; /* ڕەنگی دەقەکانی ناو ماڵپەڕەکە */
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-    }
 
+.chronos-logo {
+  width: 450px; /* قەبارەی لۆگۆکە */
+  height: 250px;
+  background-image: url('image.png.jpeg'); /* ناوی وێنەکەت لەسەر گیتھەب */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  /* دروستکردنی تیشکێکی کزی زێڕین لە پشتی وێنەکە */
+  filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.25));
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+/* ئەنیمەیشنی لەرینەوەی ڕووناکی لۆگۆکە */
+@keyframes logoPulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.2)); }
+  50% { filter: drop-shadow(0 0 35px rgba(184, 134, 11, 0.4)); }
+}
     /* ==========================================
        ٢. ستایلی شاشەی لۆدینگی ٣ چرکەییەکە
        ========================================== */
@@ -886,7 +898,7 @@ footer span { color: var(--accent); }
       z-index: 99999; /* بۆ ئەوەی لە سەرەوەی هەموو شتێک بێت */
       transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
     }
-
+<div class="chronos-logo"></div>
     .chronos-container {
       text-align: center;
       display: flex;
