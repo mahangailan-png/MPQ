@@ -1,454 +1,182 @@
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MPQ</title>
-  
-  <style>
-    /* ==========================================
-       ١. باگراوندی نوێی ناوەوەی ماڵپەڕەکە (The Chronos Style)
-       ========================================== */
-    body {
-      margin: 0;
-      padding: 0;
-      /* پاشبنەمایەکی تاریکی قووڵ لەگەڵ تیشکێکی کزی زێڕینی مات لە ناوەڕاستدا */
-      background: radial-gradient(circle at center, #1c1510 0%, #0a0a0a 100%);
-      color: #e5e5e5; /* ڕەنگی دەقەکانی ناو ماڵپەڕەکە */
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+
+export const Route = createFileRoute("/")({
+  component: Index,
+  head: () => ({
+    meta: [
+      { title: "MPQ" },
+      { name: "description", content: "MPQ — Aligning Precision" },
+    ],
+  }),
+});
+
+type Mode = "signin" | "signup";
+
+function Index() {
+  const [loading, setLoading] = useState(true);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, s) => setSession(s),
+    );
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const openAuth = (m: Mode) => {
+    setMode(m);
+    setError("");
+    setAuthOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("تکایە ئیمەیڵێکی دروست بنووسە.");
+      return;
     }
-
-    /* ==========================================
-       ٢. ستایلی شاشەی لۆدینگی ٣ چرکەییەکە
-       ========================================== */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: #050505; /* پاشبنەمای تەواو ڕەش بۆ سەرەتای لۆدینگەکە */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999; /* بۆ ئەوەی لە سەرەوەی هەموو شتێک بێت */
-      transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+    if (password.length < 6) {
+      setError("پاسوۆرد دەبێت لانیکەم ٦ پیت بێت.");
+      return;
     }
-
-    .chronos-container {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* ڕێکخستنی ئەو وێنەیەی کە ناردت وەک لۆگۆ */
-    .chronos-logo {
-      width: 450px; /* قەبارەی لۆگۆکە لەسەر شاشە */
-      height: 250px;
-      background-image: url('image.png'); /* ناوی وێنەکەت پێویستە image.png بێت */
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      /* دروستکردنی تیشکێکی کزی زێڕین لە پشتی وێنەکە */
-      filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.25));
-      animation: logoPulse 3s ease-in-out infinite;
-    }
-
-    /* هێڵی لۆدینگی باریک و پرۆفیشناڵ */
-    .loading-bar-container {
-      width: 250px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.05);
-      margin-top: -10px;
-      overflow: hidden;
-      border-radius: 2px;
-    }
-
-    .loading-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, #b8860b, transparent);
-      animation: fillProgress 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    /* نووسینی ژێر لۆدینگەکە */
-    .loading-text {
-      color: #7a746e;
-      font-family: 'Georgia', serif;
-      font-style: italic;
-      font-size: 0.85rem;
-      margin-top: 15px;
-      letter-spacing: 3px;
-      opacity: 0.8;
-    }
-
-    /* ئەنیمەیشن بۆ دروستکردنی لەرینەوەی نەرمی ڕووناکی لۆگۆکە */
-    @keyframes logoPulse {
-      0%, 100% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.2)); }
-      50% { filter: drop-shadow(0 0 35px rgba(184, 134, 11, 0.4)); }
-    }
-
-    /* ئەنیمەیشنی پڕبوونی هێڵی لۆدینگەکە */
-    @keyframes fillProgress {
-      to { width: 100%; }
-    }
-
-    /* کلاسی شاردنەوەی لۆدینگەکە دوای ٣ چرکە */
-    .fade-out {
-      opacity: 0;
-      visibility: hidden;
-    }
-    
-    /* ==========================================
-       ٣. ستایلی ناوەڕۆکی سەرەکی ماڵپەڕەکەت
-       ========================================== */
-    .content-box {
-      padding: 40px;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
-
-  <div id="loading-screen">
-    <div class="chronos-container">
-      <div class="chronos-logo"></div>
-      <div class="loading-bar-container">
-        <div class="loading-bar"></div>
-      </div>
-      <p class="loading-text">MPQ: Aligning Precision...</p>
-    </div>
-  </div>
-
-  <div class="content-box">
-    <h1>بەخێربێن بۆ ماڵپەڕی MPQ</h1>
-    <p>ئەمە باگراوەندە نوێیەکەیە بە ستایلی کاتژمێری میکانیکی تاریک.</p>
-  </div>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-          loadingScreen.classList.add('fade-out');
-        }
-      }, 3000); 
-    });
-  </script>
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MPQ</title>
-  
-  <style>
-    /* ==========================================
-       ١. باگراوندی ناوەوەی ماڵپەڕەکە (The Chronos Style)
-       ========================================== */
-    body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at center, #16161a 0%, #0b0b0c 100%);
-      color: #e5e5e5; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ==========================================
-       ٢. شاشەی لۆدینگی ٣ چرکەییەکە
-       ========================================== */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: #050505; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999; 
-      transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
-    }
-
-    .chronos-container {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .chronos-logo {
-      width: 450px; 
-      height: 250px;
-      background-image: url('image.png.jpeg'); 
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.25));
-      animation: logoPulse 3s ease-in-out infinite;
-    }
-
-    .loading-bar-container {
-      width: 250px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.05);
-      margin-top: -10px;
-      overflow: hidden;
-      border-radius: 2px;
-    }
-
-    .loading-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, #b8860b, transparent);
-      animation: fillProgress 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    .loading-text {
-      color: #7a746e;
-      font-family: 'Georgia', serif;
-      font-style: italic;
-      font-size: 0.85rem;
-      margin-top: 15px;
-      letter-spacing: 3px;
-      opacity: 0.8;
-    }
-
-    @keyframes logoPulse {
-      0%, 100% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.2)); }
-      50% { filter: drop-shadow(0 0 35px rgba(184, 134, 11, 0.4)); }
-    }
-
-    @keyframes fillProgress {
-      to { width: 100%; }
-    }
-
-    .fade-out {
-      opacity: 0;
-      visibility: hidden;
-    }
-    
-    /* ==========================================
-       ٣. دیزاینی ناوەوەی ماڵپەڕەکە (Nav و ناوەڕۆک)
-       ========================================== */
-    header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 20px 40px;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-    }
-
-    /* بەشی چەپ (دەربارە و پەیوەندی) */
-    .nav-left a {
-      color: #a0a0a5;
-      text-decoration: none;
-      margin-right: 20px;
-      font-size: 0.95rem;
-      transition: color 0.3s;
-    }
-    .nav-left a:hover {
-      color: #b8860b;
-    }
-
-    /* بەشی ڕاست (خۆتۆمارکردن) */
-    .nav-right .btn-register {
-      background: transparent;
-      border: 1px solid #b8860b;
-      color: #b8860b;
-      padding: 8px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-    }
-    .nav-right .btn-register:hover {
-      background: #b8860b;
-      color: #000;
-      box-shadow: 0 0 15px rgba(184, 134, 11, 0.4);
-    }
-
-    /* لۆگۆی سەرەکی MPQ لە ناوەڕاست */
-    .main-content {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    .main-logo {
-      font-size: 5rem;
-      font-weight: 900;
-      letter-spacing: 5px;
-      background: linear-gradient(135deg, #fff 30%, #b8860b 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 30px rgba(184, 134, 11, 0.2));
-      margin: 0;
-    }
-
-    /* ==========================================
-       ٤. مۆدێل یان بلۆککردنی شاشە بۆ ئیمەیڵ
-       ========================================== */
-    #email-gate {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: rgba(10, 10, 12, 0.85);
-      backdrop-filter: blur(10px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999; /* لە ژێر لۆدینگەکە بەڵام لە سەرووی ماڵپەڕەکە */
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s, visibility 0.5s;
-    }
-
-    #email-gate.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .gate-box {
-      background: #16161a;
-      border: 1px solid rgba(184, 134, 11, 0.3);
-      padding: 40px;
-      border-radius: 8px;
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    }
-
-    .gate-box h2 {
-      margin-top: 0;
-      color: #fff;
-      font-size: 1.5rem;
-    }
-
-    .gate-box p {
-      color: #a0a0a5;
-      font-size: 0.9rem;
-      margin-bottom: 25px;
-    }
-
-    .gate-box input[type="email"] {
-      width: 100%;
-      padding: 12px;
-      box-sizing: border-box;
-      background: #0b0b0c;
-      border: 1px solid #333;
-      color: #fff;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 1rem;
-      margin-bottom: 15px;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-
-    .gate-box input[type="email"]:focus {
-      border-color: #b8860b;
-    }
-
-    .gate-box .btn-submit {
-      width: 100%;
-      padding: 12px;
-      background: #b8860b;
-      border: none;
-      color: #000;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .gate-box .btn-submit:hover {
-      background: #d49b13;
-    }
-  </style>
-</head>
-<body>
-
-  <div id="loading-screen">
-    <div class="chronos-container">
-      <div class="chronos-logo"></div>
-      <div class="loading-bar-container">
-        <div class="loading-bar"></div>
-      </div>
-      <p class="loading-text">MPQ: Aligning Precision...</p>
-    </div>
-  </div>
-
-  <div id="email-gate">
-    <div class="gate-box">
-      <h2>بەخێربێن بۆ MPQ</h2>
-      <p>بۆ چوونە ناو ماڵپەڕ و بەکارهێنانی خزمەتگوزارییەکان، تکایە سەرەتا ئیمەیڵەکەت داخڵ بکە.</p>
-      <input type="email" id="user-email" placeholder="ئیمەیڵەکەت بنووسە..." required>
-      <button class="btn-submit" onclick="verifyEmail()">چوونە ژوورەوە</button>
-    </div>
-  </div>
-
-  <header>
-    <div class="nav-left">
-      <a href="#">دەربارە</a>
-      <a href="#">پەیوەندی</a>
-    </div>
-    
-    <div class="nav-right">
-      <button class="btn-register">خۆتۆمارکردن</button>
-    </div>
-  </header>
-
-  <main class="main-content">
-    <h1 class="main-logo">MPQ</h1>
-  </main>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      // دوای ٣ چرکە لۆدینگەکە لادەچێت و پەنجەرەی ئیمەیڵەکە دەردەکەوێت
-      setTimeout(() => {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-          loadingScreen.classList.add('fade-out');
-        }
-        
-        // دەرکەوتنی پەنجەرەی ئیمەیڵ
-        document.getElementById('email-gate').classList.add('show');
-      }, 3000); 
-    });
-
-    // فەرمانی پشکنینی ئیمەیڵ
-    function verifyEmail() {
-      const emailInput = document.getElementById('user-email').value;
-      
-      // پشکنین بۆ ئەوەی بزانێت دەقی تێدایە و نیشانەی @ تێدایە
-      if (emailInput.trim() !== "" && emailInput.includes("@")) {
-        // پەنجەرەکە لادەبات و ڕێگا دەدات ماڵپەڕەکە بەکاربهێنرێت
-        document.getElementById('email-gate').classList.remove('show');
+    setBusy(true);
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        if (error) throw error;
+        setAuthOpen(false);
       } else {
-        alert("تکایە ئیمەیڵێکی دروست بنووسە بۆ ئەوەی بتوانیت ماڵپەڕەکە بەکاربهێنیت.");
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        setAuthOpen(false);
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "هەڵەیەک ڕوویدا.");
+    } finally {
+      setBusy(false);
     }
-  </script>
+  };
 
-</body>
-</html>
-</body>
-</html>
+  const handleGoogle = async () => {
+    setError("");
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setError(result.error.message || "نەتوانرا بە گوگڵ بچیتە ژوورەوە.");
+      setBusy(false);
+      return;
+    }
+    if (result.redirected) return;
+    setAuthOpen(false);
+    setBusy(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return (
+    <div dir="rtl" lang="ku" className="mpq-root">
+      <div className={`mpq-loading ${loading ? "" : "fade-out"}`}>
+        <div className="chronos-container">
+          <div className="chronos-logo">MPQ</div>
+          <div className="loading-bar-container">
+            <div className="loading-bar" />
+          </div>
+          <div className="loading-text">MPQ: Aligning Precision...</div>
+        </div>
+      </div>
+
+      <header className="mpq-header">
+        <nav className="nav-left">
+          <a href="#contact" onClick={(e) => { e.preventDefault(); setContactOpen(true); }}>
+            پەیوەندی
+          </a>
+        </nav>
+        <div className="nav-right">
+          {session ? (
+            <>
+              <span className="mpq-user-pill">{session.user.email}</span>
+              <button className="btn-logout" onClick={handleLogout}>دەرچوون</button>
+            </>
+          ) : (
+            <button className="btn-register" onClick={() => openAuth("signin")}>
+              چوونە ژوورەوە
+            </button>
+          )}
+        </div>
+      </header>
+
+      <main className="main-content">
+        <h1 className="main-logo">MPQ</h1>
+      </main>
+
+      {/* Auth Modal */}
+      <div className={`email-gate ${authOpen ? "show" : ""}`}>
+        <form className="gate-box" onSubmit={handleSubmit}>
+          <button type="button" className="btn-close" onClick={() => setAuthOpen(false)} aria-label="داخستن">×</button>
+          <h2>چوونە ژوورەوە</h2>
+
+          <input type="email" placeholder="ئیمەیڵ" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" placeholder="پاسوۆرد (لانیکەم ٦ پیت)" value={password} onChange={(e) => setPassword(e.target.value)} required />
+
+          {error && <div className="mpq-error">{error}</div>}
+
+          <button type="submit" className="btn-submit" disabled={busy}>
+            {busy ? "..." : "چوونە ژوورەوە"}
+          </button>
+
+          <div className="mpq-divider">یان</div>
+
+          <button type="button" className="btn-google" onClick={handleGoogle} disabled={busy}>
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+              <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.79 2.72v2.26h2.9c1.7-1.56 2.69-3.87 2.69-6.62z"/>
+              <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.81.54-1.84.86-3.06.86-2.36 0-4.36-1.6-5.07-3.74H.96v2.34A9 9 0 0 0 9 18z"/>
+              <path fill="#FBBC05" d="M3.93 10.68A5.4 5.4 0 0 1 3.64 9c0-.58.1-1.15.29-1.68V4.98H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.02l2.97-2.34z"/>
+              <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.98l2.97 2.34C4.64 5.18 6.64 3.58 9 3.58z"/>
+            </svg>
+            بەردەوامبوون بە گوگڵ
+          </button>
+        </form>
+      </div>
+
+      {/* Contact Modal */}
+      <div className={`email-gate ${contactOpen ? "show" : ""}`}>
+        <div className="gate-box">
+          <button type="button" className="btn-close" onClick={() => setContactOpen(false)} aria-label="داخستن">×</button>
+          <h2>پەیوەندی</h2>
+          <a href="mailto:mahan.gailan@gmail.com" style={{ display: "block", marginTop: "1rem", textAlign: "center" }}>
+            mahan.gailan@gmail.com
+          </a>
+          <a href="tel:+9647512157970" dir="ltr" style={{ display: "block", marginTop: "0.75rem", textAlign: "center" }}>
+            +964 751 215 7970
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
