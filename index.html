@@ -178,5 +178,237 @@ function Index() {
         </div>
       </div>
     </div>
+/* ==========================================================
+   MPQ — Chronos Dark Gold Theme
+   ========================================================== */
+
+/* 1) Tokens */
+:root {
+  --mpq-bg-deep: #0a0a0a;
+  --mpq-bg-warm: #1c1510;
+  --mpq-loading-bg: #050505;
+  --mpq-surface: #16161a;
+  --mpq-input-bg: #0b0b0c;
+  --mpq-input-border: #333;
+  --mpq-gold: #b8860b;
+  --mpq-gold-hover: #d49b13;
+  --mpq-text: #e5e5e5;
+  --mpq-text-muted: #a0a0a5;
+  --mpq-text-faint: #7a746e;
+  --mpq-font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --mpq-font-serif: Georgia, serif;
+}
+
+/* 2) Keyframes */
+@keyframes mpq-logo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.2)); }
+  50%      { filter: drop-shadow(0 0 35px rgba(184, 134, 11, 0.45)); }
+}
+@keyframes mpq-fill-progress { to { width: 100%; } }
+
+/* 3) Root layout */
+.mpq-root {
+  margin: 0; padding: 0;
+  background: radial-gradient(circle at center, var(--mpq-bg-warm) 0%, var(--mpq-bg-deep) 100%);
+  color: var(--mpq-text);
+  font-family: var(--mpq-font-sans);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 4) Loading screen */
+.mpq-loading {
+  position: fixed; inset: 0;
+  background-color: var(--mpq-loading-bg);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 99999;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+}
+.mpq-loading.fade-out { opacity: 0; visibility: hidden; }
+
+.chronos-container { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.chronos-logo {
+  font-size: 5rem; font-weight: 900; letter-spacing: 8px;
+  background: linear-gradient(135deg, #fff 30%, var(--mpq-gold) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 25px rgba(184, 134, 11, 0.35));
+  animation: mpq-logo-pulse 3s ease-in-out infinite;
+  margin-bottom: 30px;
+}
+.loading-bar-container { width: 250px; height: 2px; background: rgba(255,255,255,0.05); overflow: hidden; border-radius: 2px; }
+.loading-bar {
+  width: 0%; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--mpq-gold), transparent);
+  animation: mpq-fill-progress 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.loading-text {
+  color: var(--mpq-text-faint); font-family: var(--mpq-font-serif);
+  font-style: italic; font-size: 0.85rem; margin-top: 15px;
+  letter-spacing: 3px; opacity: 0.8;
+}
+
+/* 5) Header & navigation */
+.mpq-header {
+  position: absolute; top: 0; left: 0; width: 100%;
+  padding: 20px 40px; box-sizing: border-box;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 10;
+}
+.nav-left a {
+  color: var(--mpq-text-muted); text-decoration: none;
+  margin-left: 20px; font-size: 0.95rem; transition: color 0.3s;
+}
+.nav-left a:hover { color: var(--mpq-gold); }
+
+.btn-register {
+  background: transparent; border: 1px solid var(--mpq-gold);
+  color: var(--mpq-gold); padding: 8px 20px; border-radius: 4px;
+  cursor: pointer; font-size: 0.9rem; transition: all 0.3s;
+}
+.btn-register:hover {
+  background: var(--mpq-gold); color: #000;
+  box-shadow: 0 0 15px rgba(184, 134, 11, 0.4);
+}
+
+/* 6) Main content */
+.main-content {
+  height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+}
+.main-logo {
+  font-size: 6rem; font-weight: 900; letter-spacing: 8px;
+  background: linear-gradient(135deg, #fff 30%, var(--mpq-gold) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 30px rgba(184, 134, 11, 0.25));
+  margin: 0;
+}
+
+/* 7) Email gate (modal) */
+.email-gate {
+  position: fixed; inset: 0;
+  background: rgba(10, 10, 12, 0.85);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999; opacity: 0; visibility: hidden;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+.email-gate.show { opacity: 1; visibility: visible; }
+
+.gate-box {
+  position: relative;
+  background: var(--mpq-surface);
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  padding: 40px; border-radius: 8px; text-align: center;
+  width: 90%; max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.gate-box h2 { margin-top: 0; color: #fff; font-size: 1.5rem; }
+.gate-box input[type="email"],
+.gate-box input[type="password"] {
+  width: 100%; padding: 12px; box-sizing: border-box;
+  background: var(--mpq-input-bg); border: 1px solid var(--mpq-input-border);
+  color: #fff; border-radius: 4px; text-align: center; font-size: 1rem;
+  margin-bottom: 15px; outline: none; transition: border-color 0.3s;
+}
+.gate-box input:focus { border-color: var(--mpq-gold); }
+
+.btn-submit {
+  width: 100%; padding: 12px;
+  background: var(--mpq-gold); border: none; color: #000;
+  font-weight: bold; border-radius: 4px; cursor: pointer;
+  font-size: 1rem; transition: background 0.3s;
+}
+.btn-submit:hover { background: var(--mpq-gold-hover); }
+
+.mpq-divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--mpq-text-faint); font-size: 0.75rem;
+  margin: 18px 0; letter-spacing: 2px;
+}
+.mpq-divider::before, .mpq-divider::after {
+  content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.08);
+}
+
+.btn-google {
+  width: 100%; padding: 12px; background: #fff; border: none;
+  color: #1a1a1a; font-weight: 600; border-radius: 4px;
+  cursor: pointer; font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.25s;
+}
+.btn-google:hover { background: #f0f0f0; }
+
+.btn-close {
+  position: absolute; top: 12px; left: 12px;
+  background: transparent; border: none; color: var(--mpq-text-faint);
+  font-size: 1.4rem; cursor: pointer; line-height: 1;
+}
+.mpq-error { color: #ff6b6b; font-size: 0.85rem; margin-bottom: 12px; }
+
+.btn-logout {
+  background: transparent; border: 1px solid rgba(255,255,255,0.15);
+  color: var(--mpq-text-muted); padding: 8px 16px;
+  border-radius: 4px; cursor: pointer; font-size: 0.85rem;
+  margin-right: 10px; transition: all 0.25s;
+}
+.btn-logout:hover { border-color: var(--mpq-gold); color: var(--mpq-gold); }
+.mpq-user-pill { color: var(--mpq-text-muted); font-size: 0.85rem; margin-right: 12px; }
+
+/* 8) Responsive */
+@media (max-width: 640px) {
+  .mpq-header   { padding: 16px 20px; }
+  .chronos-logo { font-size: 3.2rem; letter-spacing: 6px; }
+  .main-logo    { font-size: 3.8rem; letter-spacing: 6px; }
+  .gate-box     { padding: 28px 22px; }
+}
+
+/* ==========================================
+   Liquid Glass Hover Effect (global)
+   ========================================== */
+a, button, .btn, .mpq-card, .gate-box, input, textarea, select,
+[role="button"], .hover-glass {
+  position: relative;
+  transition: backdrop-filter 0.4s ease, background 0.4s ease,
+              box-shadow 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+}
+
+a:hover, button:hover, .btn:hover, .mpq-card:hover, .gate-box:hover,
+input:hover, textarea:hover, select:hover,
+[role="button"]:hover, .hover-glass:hover {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.04)) !important;
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 0 24px rgba(212, 175, 55, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Liquid shimmer sweep on hover */
+a::after, button::after, .btn::after, .mpq-card::after, .hover-glass::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 70%);
+  background-size: 200% 100%; background-position: 200% 0;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease, background-position 0.9s ease;
+  mix-blend-mode: overlay;
+}
+
+a:hover::after, button:hover::after, .btn:hover::after,
+.mpq-card:hover::after, .hover-glass:hover::after {
+  opacity: 1; background-position: -50% 0;
+}
+
   );
 }
